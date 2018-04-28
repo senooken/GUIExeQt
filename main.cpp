@@ -1,25 +1,31 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
-#include <QObject>
-#include <QString>
 #include <QProcess>
 
 class MyClass : public QObject
 {
     Q_OBJECT
 public:
-//    explicit MyClass(QObject *parent = 0) : QObject(parent){};
-//    explicit virtual MyClass();
-//    explicit MyClass(QObject *parent = 0 ) : QObject(parent){}
-//    Q_INVOKABLE QString exec(QString exe)
-    Q_INVOKABLE QString exec(QString exe)
+    Q_INVOKABLE QVariantMap exec(QString exe)
     {
         QProcess process;
+        QVariantMap map;
+
+        connect(&process, &QProcess::errorOccurred, [&](QProcess::ProcessError e) {
+            map.insert("stderr", QMetaEnum::fromType<QProcess::ProcessError>().key(e));
+        });
+
         process.start(exe);
         process.waitForFinished(-1);
-        qDebug(process.readAllStandardError());
-        return process.readAllStandardOutput();
+
+        if (!map.count("stderr"))
+          map.insert("stderr", process.readAllStandardError());
+
+        map.insert("stdout", process.readAllStandardOutput());
+        map.insert("exit", process.exitCode());
+
+        return map;
     }
 };
 
@@ -28,7 +34,6 @@ public:
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
-
     qmlRegisterType<MyClass>("myclass", 1, 0, "MyClass");
 
     QQmlApplicationEngine engine;

@@ -61,8 +61,7 @@ ApplicationWindow {
         Layout.minimumWidth: 260
         Layout.minimumHeight: 260
         Layout.preferredWidth: 380
-        Layout.preferredHeight: 380
-
+        Layout.preferredHeight: 400
 
         Tab {
             id: tab1
@@ -93,15 +92,20 @@ ApplicationWindow {
 
                     Settings {
                         property alias exe: exe.text
-                        property alias stdout: stdin.text
+                        property alias stdout: stdout.text
                         property alias stdin: stdin.text
                     }
 
                     Button {
                         text: "Run"
                         onClicked: {
+                            var exec = myClass.exec(exe.text)
+                            stdout.text = exec.stdout
+                            stderr.text = exec.stderr
+                            exit.text = exec.exit
                             print(exe.text)
-                            stdout.text = myClass.exec(exe.text)
+                            print("stdout:" + stdout.text)
+                            print("stderr:" + stderr.text)
                         }
                     }
                     Button {
@@ -120,9 +124,19 @@ ApplicationWindow {
                     }
 
                     Text {
+                        text: "EXIT CODE"
+                    }
+                    TextArea {
+                        id: exit
+                        Layout.fillWidth: true
+                        implicitHeight: fm.height*2
+
+                    }
+                    Text {
                         text: "STDERR"
                     }
                     TextArea {
+                        id: stderr
                         Layout.fillWidth: true
                         implicitHeight: fm.height*2
 
