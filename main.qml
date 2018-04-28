@@ -1,5 +1,6 @@
 import QtQuick 2.9
 import QtQuick.Controls 1.4
+import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.3
 import Qt.labs.settings 1.0
 import myclass 1.0
@@ -9,7 +10,15 @@ import myclass 1.0
 ApplicationWindow {
     id: applicationWindow
     visible: true
-    title: qsTr("Hello World")
+    title: qsTr("GUIExec")
+
+    FileDialog {
+        id: fd
+    }
+
+    function loadTab() {
+        tv.addTab()
+    }
 
     Action {
         id: quitAction
@@ -55,13 +64,13 @@ ApplicationWindow {
     }
 
     TabView {
-        id: tab
+        id: tv
         anchors.fill: parent
 //        anchors.margins: 20
         Layout.minimumWidth: 260
         Layout.minimumHeight: 260
-        Layout.preferredWidth: 380
-        Layout.preferredHeight: 400
+        Layout.preferredWidth: 420
+        Layout.preferredHeight: 440
 
         Tab {
             id: tab1
@@ -99,7 +108,8 @@ ApplicationWindow {
                     Button {
                         text: "Run"
                         onClicked: {
-                            var exec = myClass.exec(exe.text)
+                            command.text = exe.text + " " +arg1.text + " " + arg2.text
+                            var exec = myClass.exec(command.text)
                             stdout.text = exec.stdout
                             stderr.text = exec.stderr
                             exit.text = exec.exit
@@ -116,11 +126,21 @@ ApplicationWindow {
                     Button {
                         id: exeDialog
                         text: "EXE"
+                        onClicked: {fd.open(); exe.text = fd.fileUrl}
                     }
 
                     TextField {
                         id: exe
                         Layout.fillWidth: true
+                    }
+
+                    Text {
+                        text: "COMMAND"
+                    }
+                    TextArea {
+                        id: command
+                        Layout.fillWidth: true
+                        implicitHeight: fm.height*2
                     }
 
                     Text {
