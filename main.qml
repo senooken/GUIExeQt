@@ -10,7 +10,7 @@ import myclass 1.0
 ApplicationWindow {
     id: applicationWindow
     visible: true
-    title: qsTr("GUIExec")
+    title: qsTr("GUIExeQt")
 
     FileDialog {
         id: fd
